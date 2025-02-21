@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header Bar</title>
+  <style>
+    /* Header Bar Styles */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 10px;
+      background-color: #00000000;
+      color: var(--text-color);
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000; /* Ensure it stays on top */
+      transition: grey 0.3s ease, color 0.3s ease;
+    }
+
+    .header-link {
+      color: #4e4e4e;
+      font-size: 20px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 20px;
+    }
+
+    .header-link:hover {
+      color: #757575;
+    }
+
+    /* Dropdown menu styles */
+    .dropdown {
+      position: relative;
+    }
+
+    .dropbtn {
+      background-color: #505050;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .dropbtn:hover {
+      background-color: #333;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #1d1d1d;
+      border: 1px solid #535353;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+      min-width: 220px;
+      max-height: 380px; /* Set a maximum height for the dropdown */
+      overflow-y: auto; /* Enable vertical scrolling */
+      padding: 10px 0;
+    }
+
+    .dropdown-content a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      display: block;
+      font-size: 14px;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #535353;
+    }
+
+    .dropdown.show .dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header-bar">
+    <a href="https://github.com/kay-who-codes/APP_NAME_GOES_HERE" class="header-link">APP_NAME_GOES_HERE</a>
+    <div class="dropdown">
+      <button class="dropbtn" onclick="toggleDropdown()">More Apps</button>
+      <div class="dropdown-content" id="dropdownMenu">
+        <a href="https://kay-who-codes.github.io/Cards-Against-Humanity/">⬜ Cards Against Humanity</a>
+        <a href="https://kay-who-codes.github.io/Ultimate-Drinking-Cards">🍻 Ultimate Drinking Cards</a>
+        <a href="https://kay-who-codes.github.io/Kings-Cup/">🍺 Kings Cup</a>
+        <a href="https://kay-who-codes.github.io/Question-Cards/">❓ Question Cards</a>
+        <a href="https://kay-who-codes.github.io/Daily-Comic-Strips/">🗞️ Comic Strips</a>
+        <a href="https://kay-who-codes.github.io/Percentage-Calculators/">➗ Percentage Calculators</a>
+        <a href="https://kay-who-codes.github.io/Bitcoin-Holdings-Value-Calculator/">🟠 BTC Holdings Value</a>
+        <a href="https://kay-who-codes.github.io/Drink-Value-Calculator/">🍸 Drink Value Calculator</a>
+        <a href="https://kay-who-codes.github.io/Soundboard/">🔊 Soundboard</a>
+        <a href="https://kay-who-codes.github.io/Greek-Quiz/">🇬🇷 Greek Quiz</a>
+        <a href="https://kay-who-codes.github.io/HTML-Displayer/">👁️ HTML Viewer</a>
+        <a href="https://kay-who-codes.github.io/World-Times">🌍 World Times</a>
+        <a href="https://kay-who-codes.github.io/Calendar-Holiday-Countdown/">📅 Calendar Countdown</a>
+        <a href="https://kay-who-codes.github.io/Time-Progress-Meters/">⏳ Time Progress Meters</a>
+        <a href="https://kay-who-codes.github.io/13-Month-Calendar-Converter/">📅 13-Month Calendar Converter</a>
+        <a href="https://kay-who-codes.github.io/Skint-Countdown/">⌛ Skint Countdown</a>
+        <a href="https://kay-who-codes.github.io/Song-Inspirator/">🎶 Song Inspirator</a>
+        <a href="https://kay-who-codes.github.io/Advertising-Character-Generator/">👤 Advertising Character Generator</a>   
+        <a href="https://kay-who-codes.github.io/Bible-Completion-Calculator/">✝️ Bible Completion Calculator</a>
+        <a href="https://kay-who-codes.github.io/Random-Bible-Verse/">✝️ Random Bible Verses</a>
+        <a href="https://kay-who-codes.github.io/Random-Numbers/">🔢 Random Number Generator</a>
+        <a href="https://kay-who-codes.github.io/Coinflip/">🪙 Coinflip</a>
+        <a href="https://kay-who-codes.github.io/Game-Point-Tracker/">⚽ Game Point Tracker</a>      </div>
+    </div>
+  </header>
+
+  <script>
+    // HEADER BAR
+
+    // Toggle dropdown visibility
+    function toggleDropdown() {
+      const dropdown = document.querySelector('.dropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (event) => {
+      const dropdown = document.querySelector('.dropdown');
+      if (!dropdown.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>
