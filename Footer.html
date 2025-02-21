@@ -4,30 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Footer styles */
-    #footer {
-        margin-top: auto; /* Pushes footer to bottom */
-        padding: 10px 0;
-        text-align: center;
-        font-size: 16px;
-        color: #535353;
-    }
+        :root {
+            --footer-bg-color: #f5f5f5; /* Light background for footer */
+            --footer-text-color: #535353; /* Default text color */
+            --footer-link-color: #ff6347; /* Link color */
+            --footer-link-hover-color: #e55337; /* Link hover color */
+        }
 
-    #footer a {
-        color: #ff6347;
-        text-decoration: none;
-    }
+        footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 1rem; /* 16px equivalent */
+            color: var(--footer-text-color);
+            background-color: var(--footer-bg-color);
+        }
 
-    #footer a:hover {
-        text-decoration: underline;
-    }
+        footer a {
+            color: var(--footer-link-color);
+            text-decoration: none;
+            transition: color 0.3s ease, text-decoration 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--footer-link-hover-color);
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            footer {
+                font-size: 0.875rem; /* 14px equivalent */
+            }
+        }
     </style>
 </head>
 <body>
     <footer>
-    <div id="footer">
-        Made by <a href="https://linktr.ee/kaywhocreates" target="_blank" rel="noopener noreferrer">Kay 🧡</a>
-    </div>
+        Made by <a href="https://linktr.ee/kaywhocreates" target="_blank" rel="noopener noreferrer" aria-label="Visit Kay's Linktree">Kay 🧡</a>
     </footer>
 </body>
 </html>
