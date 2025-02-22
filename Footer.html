@@ -11,6 +11,17 @@
             --footer-link-hover-color: #e55337; /* Link hover color */
         }
 
+        html, body {
+            height: 100%; /* Make sure the html and body take up the full height of the viewport */
+            margin: 0; /* Remove default margin */
+            display: flex;
+            flex-direction: column; /* Stack children vertically */
+        }
+
+        body {
+            min-height: 100vh; /* Ensure the body is at least the height of the viewport */
+        }
+
         footer {
             margin-top: auto; /* Pushes footer to the bottom */
             padding: 1rem 0;
