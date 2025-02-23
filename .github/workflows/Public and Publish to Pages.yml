@@ -1,0 +1,50 @@
+name: Change Repo Visibility & Publish to GitHub Pages
+
+on:
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+
+jobs:
+  change_visibility_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Change repository visibility to public
+        env:
+          Kay_PAT: ${{ secrets.Kay_PAT }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          echo "Making repository public..."
+          RESPONSE=$(curl -L -X PATCH https://api.github.com/repos/$OWNER/$REPO \
+          -H "Authorization: token $Kay_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"private": false}')
+          
+          echo "Response: $RESPONSE"
+          
+          if echo "$RESPONSE" | grep -q "Bad credentials"; then
+            echo "❌ ERROR: Invalid GitHub token!"
+            exit 1
+          fi
+          
+          echo "✅ Repository is now public."
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Enable GitHub Pages from the Main Branch
+        env:
+          Kay_PAT: ${{ secrets.Kay_PAT }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          echo "Enabling GitHub Pages from the main branch..."
+          curl -L -X POST https://api.github.com/repos/$OWNER/$REPO/pages \
+          -H "Authorization: token $Kay_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"source":{"branch":"main","path":"/"}}'
+
+      - name: Deploy GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.Kay_PAT }}
+          publish_dir: ./  # Adjust if needed (e.g., `./docs` or `./public`)
