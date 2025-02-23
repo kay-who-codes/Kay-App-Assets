@@ -1,0 +1,49 @@
+name: Remove GitHub Pages & Make Repo Private
+
+on:
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+
+jobs:
+  remove_pages_and_make_private:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove GitHub Pages Deployment
+        env:
+          Kay_PAT: ${{ secrets.Kay_PAT }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          echo "Disabling GitHub Pages for repository..."
+          RESPONSE=$(curl -L -X DELETE https://api.github.com/repos/$OWNER/$REPO/pages \
+          -H "Authorization: token $Kay_PAT" \
+          -H "Accept: application/vnd.github.v3+json")
+
+          echo "Response: $RESPONSE"
+
+          if echo "$RESPONSE" | grep -q "Bad credentials"; then
+            echo "❌ ERROR: Invalid GitHub token!"
+            exit 1
+          fi
+          
+          echo "✅ GitHub Pages has been disabled."
+
+      - name: Make Repository Private
+        env:
+          Kay_PAT: ${{ secrets.Kay_PAT }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          echo "Making repository private..."
+          RESPONSE=$(curl -L -X PATCH https://api.github.com/repos/$OWNER/$REPO \
+          -H "Authorization: token $Kay_PAT" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d '{"private": true}')
+          
+          echo "Response: $RESPONSE"
+          
+          if echo "$RESPONSE" | grep -q "Bad credentials"; then
+            echo "❌ ERROR: Invalid GitHub token!"
+            exit 1
+          fi
+
+          echo "✅ Repository is now private."
