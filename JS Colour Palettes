@@ -1,0 +1,57 @@
+// Rainbow - Sequential
+
+const colours = [
+    '#FF0000', // Red
+    '#FF3300', // Red-Orange
+    '#FF6600', // Orange
+    '#FF9900', // Light Orange
+    '#FFCC00', // Gold
+    '#FFFF00', // Yellow
+    '#CCFF00', // Yellow-Green
+    '#99FF00', // Lime Green
+    '#66FF00', // Bright Green
+    '#33FF00', // Green
+    '#00FF00', // Pure Green
+    '#00FF33', // Green-Cyan
+    '#00FF66', // Cyan-Green
+    '#00FF99', // Aqua
+    '#00FFCC', // Light Aqua
+    '#00FFFF', // Cyan
+    '#00CCFF', // Sky Blue
+    '#0099FF', // Light Blue
+    '#0066FF', // Blue
+    '#0033FF', // Deep Blue
+    '#0000FF', // Pure Blue
+    '#3300FF', // Blue-Violet
+    '#6600FF', // Violet
+    '#9900FF'  // Purple
+];
+
+// High Contrast
+
+const colours = [
+    '#FF0000', // Red
+    '#00FFFF', // Aqua
+    '#FFA500', // Orange
+    '#0000FF', // Blue
+    '#7CFC00', // Lawn Green
+    '#FF00FF', // Magenta
+    '#4169E1', // Royal Blue
+    '#FFD700', // Gold
+    '#9400D3', // Dark Violet
+    '#93e449', // Light Green
+    '#FF1493', // Deep Pink
+    '#00FA9A', // Medium Spring Green
+    '#bcbcbc', // Gray
+    '#FF8C00', // Dark Orange
+    '#2db92d', // Bright Green
+    '#fd95e8', // Light Pink
+    '#1E90FF', // Dodger Blue
+    '#FFD700', // Gold
+    '#4B0082', // Indigo
+    '#FF6347', // Tomato
+    '#00CED1', // Dark Turquoise
+    '#FF4500', // Orange Red
+    '#9932CC', // Dark Orchid
+    '#9ACD32'  // Yellow Green
+];
