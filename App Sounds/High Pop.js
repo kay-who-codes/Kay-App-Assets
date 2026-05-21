@@ -1,4 +1,4 @@
-function playTick(ctx, volume = 0.6) {
+function playHighPop(ctx, volume = 0.6) {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
