@@ -1,4 +1,5 @@
 function playClack(ctx, volume = 1.2) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const bufSize = Math.floor(ctx.sampleRate * 0.015);
   const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
   const data = buf.getChannelData(0);
