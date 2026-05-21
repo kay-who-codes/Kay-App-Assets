@@ -1,4 +1,5 @@
 function playSnap(ctx, volume = 1.8) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const bufSize = Math.floor(ctx.sampleRate * 0.03);
   const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
   const data = buf.getChannelData(0);
