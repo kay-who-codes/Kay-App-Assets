@@ -1,4 +1,5 @@
 function playPop(ctx, volume = 0.7) {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.connect(gain);
