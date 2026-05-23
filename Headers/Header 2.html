@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub Repo Search Header</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --header-bg: rgba(13, 17, 23, 0.72);
+    --header-border: rgba(255,255,255,0.08);
+    --bar-bg: rgba(255,255,255,0.06);
+    --bar-bg-focus: rgba(255,255,255,0.10);
+    --bar-border: rgba(255,255,255,0.12);
+    --bar-border-focus: rgba(99,176,255,0.55);
+    --text-primary: #e6edf3;
+    --text-secondary: rgba(230,237,243,0.55);
+    --text-muted: rgba(230,237,243,0.32);
+    --accent: #4493f8;
+    --accent-glow: rgba(68,147,248,0.18);
+    --dropdown-bg: rgba(22, 27, 34, 0.97);
+    --dropdown-border: rgba(255,255,255,0.10);
+    --item-hover: rgba(255,255,255,0.06);
+    --tag-color: transparent;
+    --radius: 8px;
+    --radius-sm: 6px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: #0d1117;
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  /* ── Header Shell ─────────────────────────────────────── */
+  #gh-search-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 24px;
+    height: 56px;
+  }
+
+  /* ── Logo / Wordmark ──────────────────────────────────── */
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .header-logo svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--text-primary);
+    opacity: 0.9;
+  }
+  .header-logo-text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    display: none;
+  }
+  @media (min-width: 520px) { .header-logo-text { display: block; } }
+
+  /* ── Search Wrapper ───────────────────────────────────── */
+  .search-wrapper {
+    flex: 1;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .search-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bar-bg);
+    border: 1px solid var(--bar-border);
+    border-radius: var(--radius);
+    padding: 0 12px;
+    height: 34px;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input-row:focus-within {
+    background: var(--bar-bg-focus);
+    border-color: var(--bar-border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .search-icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  #gh-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1;
+    caret-color: var(--accent);
+  }
+  #gh-search-input::placeholder { color: var(--text-muted); }
+
+  .search-loader {
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid var(--bar-border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+    display: none;
+  }
+  .search-loader.active { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Dropdown ─────────────────────────────────────────── */
+  #gh-search-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--dropdown-bg);
+    border: 1px solid var(--dropdown-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.48);
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  #gh-search-dropdown.open { display: block; }
+
+  /* Custom scrollbar */
+  #gh-search-dropdown::-webkit-scrollbar { width: 4px; }
+  #gh-search-dropdown::-webkit-scrollbar-track { background: transparent; }
+  #gh-search-dropdown::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+  .dropdown-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 10px 14px 6px;
+  }
+
+  .repo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background 0.1s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .repo-item:hover, .repo-item.active {
+    background: var(--item-hover);
+  }
+
+  .repo-item-icon {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    color: var(--text-muted);
+  }
+
+  .repo-item-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .repo-item-name {
+    font-size: 13px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .repo-item-name mark {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .repo-item-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .repo-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .repo-lang-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .repo-lang-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .repo-private-badge {
+    font-size: 10px;
+    color: var(--text-muted);
+    border: 1px solid var(--bar-border);
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+  }
+
+  /* ── Invisible tags (for matching only) ──────────────── */
+  .repo-tags { display: none !important; visibility: hidden !important; }
+
+  /* ── Empty / Status states ────────────────────────────── */
+  .dropdown-status {
+    padding: 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ── Nav slots (right side of header) ────────────────── */
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    text-decoration: none;
+  }
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--bar-border);
+    color: var(--text-primary);
+  }
+  .nav-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  .nav-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    border: 1.5px solid var(--bar-border);
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .nav-avatar img.loaded { display: block; }
+
+</style>
+</head>
+<body>
+
+<!-- ═ HEADER ═ -->
+  
+<header id="gh-search-header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a class="header-logo" href="#" aria-label="Home">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+          .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+          -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+          .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+          .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+          0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      <span class="header-logo-text" id="gh-username-label">username</span>
+    </a>
+
+    <!-- Search -->
+    <div class="search-wrapper" role="search">
+      <div class="search-input-row">
+        <!-- Search icon -->
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="6.5" cy="6.5" r="4.5"/>
+          <line x1="10.5" y1="10.5" x2="14" y2="14"/>
+        </svg>
+        <input
+          id="gh-search-input"
+          type="search"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="Search repositories…"
+          aria-label="Search repositories"
+          aria-autocomplete="list"
+          aria-controls="gh-search-dropdown"
+          aria-expanded="false"
+        />
+        <div class="search-loader" id="gh-search-loader" aria-hidden="true"></div>
+      </div>
+
+      <!-- Results dropdown -->
+      <div id="gh-search-dropdown" role="listbox" aria-label="Repository results"></div>
+    </div>
+
+    <!-- Right-side nav buttons (optional — remove/replace as needed) -->
+    <nav class="header-nav" aria-label="Header actions">
+      <!-- Notifications bell -->
+      <a class="nav-btn" href="#" title="Notifications" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </a>
+      <!-- New repo / plus -->
+      <a class="nav-btn" href="#" title="New" aria-label="Create new">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </a>
+      <!-- Avatar -->
+      <div class="nav-avatar" id="gh-avatar" title="Profile" aria-label="User avatar">
+        <img id="gh-avatar-img" src="" alt="Avatar" />
+        <span id="gh-avatar-initials">?</span>
+      </div>
+    </nav>
+
+  </div>
+</header>
+</body>
+</html>
