@@ -23,7 +23,7 @@
     {
       user: "kay-who-codes",
       mount: "#kwc-repo-search",
-      placeholder: "Search kay-who-codes' repos…  (press /)",
+      placeholder: "",
       cacheMinutes: 15,
       maxResults: 8,
       openInNewTab: true,
@@ -52,7 +52,7 @@
     var style = document.createElement("style");
     style.id = "kwc-repo-search-style";
     style.textContent = [
-      ".kwc-root{--kwc-bg:#11161c;--kwc-panel:#161d25;--kwc-border:#28323d;--kwc-text:#dbe2e8;",
+      ".kwc-root{--kwc-bg:#0000002b;--kwc-panel:#161d25;--kwc-border:#28313b75;--kwc-text:#dbe2e8;",
       "--kwc-dim:#7c8894;--kwc-accent:#e6a13d;--kwc-accent-dim:#e6a13d33;--kwc-radius:6px;",
       "font-family:'Inter',system-ui,sans-serif;position:relative;max-width:420px;width:100%;",
       "box-sizing:border-box;}",
@@ -60,7 +60,7 @@
       ".kwc-bar{display:flex;align-items:center;gap:8px;background:var(--kwc-bg);",
       "border:1px solid var(--kwc-border);border-radius:var(--kwc-radius);padding:8px 10px;",
       "transition:border-color .15s ease,box-shadow .15s ease;}",
-      ".kwc-bar:focus-within{border-color:var(--kwc-accent);box-shadow:0 0 0 3px var(--kwc-accent-dim);}",
+      ".kwc-bar:focus-within{border-color:#ffffff25;box-shadow:0 0 0 0px var(--kwc-accent-dim);}",
       ".kwc-icon{flex:0 0 auto;color:var(--kwc-dim);display:flex;}",
       ".kwc-input{flex:1 1 auto;background:transparent;border:0;outline:0;color:var(--kwc-text);",
       "font-family:'JetBrains Mono',monospace;font-size:13px;min-width:0;}",
