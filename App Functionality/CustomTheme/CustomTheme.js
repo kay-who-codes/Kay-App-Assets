@@ -9,25 +9,44 @@
  *
  * Auto-initializes on DOMContentLoaded and injects a cog button (top
  * right) that opens a theme panel. Styles everything via CSS custom
- * properties on :root (--ts-bg, --ts-text, --ts-primary, ...), so your
- * app's own CSS just needs to reference those variables wherever it
- * wants to be themeable.
+ * properties on :root (--ts-bg, --ts-text, --ts-primary, ...).
  *
- * OPT-IN GRANULAR CUSTOMIZATION
- * ------------------------------
- * Tag any element you want the "Custom" theme to expose a control for:
+ * AUTOMATIC ELEMENT DETECTION (no markup required)
+ * --------------------------------------------------
+ * On init (and every time the panel opens), the module scans the live
+ * DOM for common UI conventions and tags whatever it finds with an
+ * internal marker class, which an injected stylesheet then wires to
+ * the matching --ts-* variables. No changes to your app's HTML or CSS
+ * are required for this to work. Detected per target type:
  *
- *   <div data-theme-target="card">...</div>
- *   <button data-theme-target="button">...</button>
- *   <nav data-theme-target="nav">...</nav>
- *   <input data-theme-target="input">
- *   <a data-theme-target="link">...</a>
- *   <span data-theme-target="badge">...</span>
- *   <div data-theme-target="modal">...</div>
+ *   card    - .card/.Card, .MuiCard-root, .MuiPaper-root, .ant-card,
+ *             .chakra-card, [class*="card"], or (as a fallback, only
+ *             if nothing else matched) any element whose computed
+ *             style looks card-like: rounded corners or a shadow,
+ *             real padding, and reasonable size.
+ *   button  - <button>, [role="button"], .btn/.button, Bootstrap/MUI/
+ *             Ant/Chakra button classes.
+ *   nav     - <nav>, [role="navigation"], .navbar/.nav/.sidebar, MUI
+ *             AppBar, Ant Menu.
+ *   input   - <input>/<select>/<textarea>, [contenteditable="true"],
+ *             .form-control, MUI/Ant/Chakra input classes.
+ *   link    - <a href="...">.
+ *   badge   - .badge/.chip/.tag, MUI Chip, Ant Tag, Chakra badge.
+ *   modal   - [role="dialog"], <dialog>, .modal/.dialog, MUI Dialog,
+ *             Ant Modal.
  *
- * The module scans the DOM for these attributes and ONLY shows the
- * matching customization group if at least one such element exists.
- * If your app has no cards, no "Card" section appears.
+ * The matching customization group in the "Custom" theme ONLY appears
+ * if at least one such element was actually found. No cards on the
+ * page → no "Cards" section.
+ *
+ * MANUAL OVERRIDE / OPT-OUT (optional)
+ * --------------------------------------
+ * Heuristics can be wrong on unconventional markup. You can override
+ * them per element:
+ *
+ *   <div data-theme-target="card">...</div>   force-include as a card
+ *   <div data-theme-target="none">...</div>   exclude from all heuristics
+ *   <div data-theme-ignore>...</div>          same as above, alt syntax
  *
  * To disable auto-init (e.g. to control timing yourself), add
  * `data-theme-selector="manual"` to the <script> tag or to <body>,
@@ -69,55 +88,84 @@
     border: "Border"
   };
 
-  // Targets that can be auto-detected via data-theme-target="...".
-  // Each derives sensible defaults from the base tokens, and each
-  // sub-token gets its own CSS var + optional custom override.
+  // Targets that are auto-detected via common markup conventions
+  // (see `signatures`) as well as an explicit data-theme-target
+  // override. Each token derives a sensible default from the base
+  // palette, feeds a real CSS property (`prop`) on the matched
+  // elements via an injected stylesheet, and gets an optional
+  // custom-color override.
   var TARGET_DEFS = {
     card: {
       label: "Cards",
+      signatures: [
+        ".card", ".Card", ".MuiCard-root", ".MuiPaper-root", ".ant-card",
+        ".chakra-card", "[class*=\"card\"]"
+      ],
       tokens: {
-        "card-bg": { label: "Card background", from: "surface" },
-        "card-border": { label: "Card border", from: "border" }
+        "card-bg": { label: "Card background", from: "surface", prop: "background-color" },
+        "card-border": { label: "Card border", from: "border", prop: "border-color" }
       }
     },
     button: {
       label: "Buttons",
+      signatures: [
+        "button", "[role=\"button\"]", ".btn", ".button", ".MuiButton-root",
+        ".ant-btn", ".chakra-button", "[class*=\"btn-\"]"
+      ],
       tokens: {
-        "button-bg": { label: "Button background", from: "primary" },
-        "button-text": { label: "Button text", from: "primaryContrast" }
+        "button-bg": { label: "Button background", from: "primary", prop: "background-color" },
+        "button-text": { label: "Button text", from: "primaryContrast", prop: "color" }
       }
     },
     nav: {
       label: "Navigation",
+      signatures: [
+        "nav", "[role=\"navigation\"]", ".navbar", ".nav", ".sidebar",
+        ".MuiAppBar-root", ".ant-menu", "[class*=\"navbar\"]"
+      ],
       tokens: {
-        "nav-bg": { label: "Nav background", from: "surface" },
-        "nav-text": { label: "Nav text", from: "text" }
+        "nav-bg": { label: "Nav background", from: "surface", prop: "background-color" },
+        "nav-text": { label: "Nav text", from: "text", prop: "color" }
       }
     },
     input: {
       label: "Inputs",
+      signatures: [
+        "input:not([type=\"hidden\"]):not([type=\"checkbox\"]):not([type=\"radio\"])",
+        "select", "textarea", "[contenteditable=\"true\"]", ".form-control",
+        ".MuiInputBase-root", ".ant-input", ".chakra-input"
+      ],
       tokens: {
-        "input-bg": { label: "Input background", from: "bg" },
-        "input-border": { label: "Input border", from: "border" }
+        "input-bg": { label: "Input background", from: "bg", prop: "background-color" },
+        "input-border": { label: "Input border", from: "border", prop: "border-color" }
       }
     },
     link: {
       label: "Links",
+      signatures: ["a[href]"],
       tokens: {
-        "link": { label: "Link color", from: "primary" }
+        "link": { label: "Link color", from: "primary", prop: "color" }
       }
     },
     badge: {
       label: "Badges",
+      signatures: [
+        ".badge", ".chip", ".tag", ".MuiChip-root", ".ant-tag",
+        ".chakra-badge", "[class*=\"badge\"]"
+      ],
       tokens: {
-        "badge-bg": { label: "Badge background", from: "accent" },
-        "badge-text": { label: "Badge text", from: "primaryContrast" }
+        "badge-bg": { label: "Badge background", from: "accent", prop: "background-color" },
+        "badge-text": { label: "Badge text", from: "primaryContrast", prop: "color" }
       }
     },
     modal: {
       label: "Modals",
+      signatures: [
+        "[role=\"dialog\"]", "dialog", ".modal", ".dialog",
+        ".MuiDialog-root", ".ant-modal"
+      ],
       tokens: {
-        "modal-bg": { label: "Modal background", from: "bg" }
+        "modal-bg": { label: "Modal background", from: "bg", prop: "background-color" }
       }
     }
   };
@@ -215,6 +263,7 @@
     this._built = true;
     this._loadState();
     this._buildUI();
+    this._injectTargetStylesheet();
     this._detectTargets();
     this._renderSwatches();
     this._applyState(false);
@@ -239,14 +288,115 @@
     } catch (e) { /* ignore quota / privacy-mode errors */ }
   };
 
+  // Rebuilds --ts-target-* marker classes on the live DOM. Safe to call
+  // repeatedly (e.g. every time the panel opens) since it clears its
+  // own previous markers first.
   ThemeSelector.prototype._detectTargets = function () {
+    var self = this;
+
+    Object.keys(TARGET_DEFS).forEach(function (key) {
+      var prevMarked = document.querySelectorAll(".ts-target-" + key);
+      for (var i = 0; i < prevMarked.length; i++) {
+        prevMarked[i].classList.remove("ts-target-" + key);
+      }
+    });
+
     var found = [];
     Object.keys(TARGET_DEFS).forEach(function (key) {
-      if (document.querySelector('[data-theme-target="' + key + '"]')) {
+      var matched = self._matchTargetElements(key);
+      if (matched.length) {
+        matched.forEach(function (elm) { elm.classList.add("ts-target-" + key); });
         found.push(key);
       }
     });
     this.detectedTargets = found;
+  };
+
+  // Union of: elements matching this target's known markup
+  // conventions, elements explicitly opted in via
+  // data-theme-target="key", minus anything explicitly opted out via
+  // data-theme-target="none" or data-theme-ignore. Falls back to a
+  // computed-style heuristic for "card" only, and only when nothing
+  // else matched, since cards have no single reliable tag/role.
+  ThemeSelector.prototype._matchTargetElements = function (key) {
+    var def = TARGET_DEFS[key];
+    var set = [];
+
+    function add(elm) {
+      if (set.indexOf(elm) !== -1) return;
+      set.push(elm);
+    }
+
+    try {
+      var bySignature = document.querySelectorAll(def.signatures.join(","));
+      for (var i = 0; i < bySignature.length; i++) add(bySignature[i]);
+    } catch (e) { /* one selector unsupported in this browser — skip gracefully */ }
+
+    var byAttr = document.querySelectorAll('[data-theme-target="' + key + '"]');
+    for (var j = 0; j < byAttr.length; j++) add(byAttr[j]);
+
+    if (key === "card" && set.length === 0) {
+      this._cardStyleHeuristic().forEach(add);
+    }
+
+    return set.filter(function (elm) {
+      var opted = elm.getAttribute("data-theme-target") === "none";
+      var ignored = elm.hasAttribute("data-theme-ignore");
+      return !opted && !ignored;
+    });
+  };
+
+  // Last-resort visual heuristic for "card-like" containers when no
+  // known class/framework convention matched anything on the page:
+  // rounded corners or a shadow, real padding, a reasonable footprint,
+  // and at least one child. Bounded so it stays cheap on large pages.
+  ThemeSelector.prototype._cardStyleHeuristic = function () {
+    var candidates = document.querySelectorAll("div, li, article, section");
+    var scanLimit = Math.min(candidates.length, 1200);
+    var matches = [];
+
+    for (var i = 0; i < scanLimit && matches.length < 200; i++) {
+      var elm = candidates[i];
+      var style = getComputedStyle(elm);
+      var radius = parseFloat(style.borderRadius) || 0;
+      var hasShadow = !!style.boxShadow && style.boxShadow !== "none";
+      var padding = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingLeft) || 0);
+      var w = elm.offsetWidth;
+      var h = elm.offsetHeight;
+
+      if (
+        (hasShadow || radius > 4) &&
+        padding > 4 &&
+        elm.childElementCount > 0 &&
+        w > 80 && w < 1200 &&
+        h > 40 && h < 1000
+      ) {
+        matches.push(elm);
+      }
+    }
+    return matches;
+  };
+
+  // Builds (once) the stylesheet that actually applies --ts-* target
+  // tokens to whatever got tagged with a .ts-target-* marker class —
+  // this is what makes detection visually effective with zero CSS
+  // changes required from the host app.
+  ThemeSelector.prototype._injectTargetStylesheet = function () {
+    if (document.getElementById("ts-target-rules")) return;
+    var lines = [];
+    Object.keys(TARGET_DEFS).forEach(function (key) {
+      var def = TARGET_DEFS[key];
+      var decls = Object.keys(def.tokens).map(function (tokenKey) {
+        var t = def.tokens[tokenKey];
+        return t.prop + ": var(--ts-" + tokenKey + ") !important;";
+      }).join(" ");
+      lines.push(
+        "." + "ts-target-" + key + " { " + decls +
+        " transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease; }"
+      );
+    });
+    var style = el("style", { id: "ts-target-rules", text: lines.join("\n") });
+    document.head.appendChild(style);
   };
 
   /* ---- UI construction ---- */
