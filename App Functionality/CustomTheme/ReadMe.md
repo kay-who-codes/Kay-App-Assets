@@ -10,7 +10,7 @@ Orange, Yellow, Green, Cyan, Blue, Purple, Pink, Rainbow (animated),** and
 - Persists the chosen theme in `localStorage`.
 - The **Custom** theme only shows customization controls for UI regions that
   actually exist in the page (cards, buttons, nav, inputs, links, badges,
-  modals) — detected automatically via `data-theme-target` attributes.
+  modals) — **detected automatically**, with no markup changes required.
 
 ## Install
 
@@ -52,27 +52,33 @@ Or use the small set of bundled utility classes: `.ts-themed-bg`,
 | `--ts-accent` | Accent color |
 | `--ts-border` | Borders / dividers |
 
-### Opt-in target tokens
+### Automatically detected target elements
 
-Tag elements so the library knows they exist, and it will both auto-theme
-them relative to the base palette **and** expose a matching group of pickers
-under the Custom theme — only if at least one matching element is found on
-the page.
+No markup changes are required. On load — and again every time the panel
+opens, so async-rendered content is picked up too — the library scans the
+DOM for common conventions and tags whatever it finds, wiring each match to
+the matching `--ts-*` variables via an injected stylesheet:
+
+| Target | Detected via | CSS vars applied |
+|---|---|---|
+| **Cards** | `.card`, `.Card`, `.MuiCard-root`, `.MuiPaper-root`, `.ant-card`, `.chakra-card`, `[class*="card"]`, or — only if nothing else matched — any element that *looks* card-like (rounded corners or a shadow, real padding, reasonable size) | `--ts-card-bg`, `--ts-card-border` |
+| **Buttons** | `<button>`, `[role="button"]`, `.btn`, `.button`, Bootstrap/MUI/Ant/Chakra button classes | `--ts-button-bg`, `--ts-button-text` |
+| **Navigation** | `<nav>`, `[role="navigation"]`, `.navbar`, `.nav`, `.sidebar`, MUI AppBar, Ant Menu | `--ts-nav-bg`, `--ts-nav-text` |
+| **Inputs** | `<input>`, `<select>`, `<textarea>`, `[contenteditable="true"]`, `.form-control`, MUI/Ant/Chakra input classes | `--ts-input-bg`, `--ts-input-border` |
+| **Links** | `<a href="...">` | `--ts-link` |
+| **Badges** | `.badge`, `.chip`, `.tag`, MUI Chip, Ant Tag, Chakra badge | `--ts-badge-bg`, `--ts-badge-text` |
+| **Modals** | `[role="dialog"]`, `<dialog>`, `.modal`, `.dialog`, MUI Dialog, Ant Modal | `--ts-modal-bg` |
+
+If your app has no cards, the "Cards" group simply won't appear under the
+Custom theme.
+
+**Manual override / opt-out**, for the rare case the heuristics guess wrong:
 
 ```html
-<div data-theme-target="card">...</div>        <!-- --ts-card-bg, --ts-card-border -->
-<button data-theme-target="button">...</button> <!-- --ts-button-bg, --ts-button-text -->
-<nav data-theme-target="nav">...</nav>          <!-- --ts-nav-bg, --ts-nav-text -->
-<input data-theme-target="input">               <!-- --ts-input-bg, --ts-input-border -->
-<a data-theme-target="link">...</a>             <!-- --ts-link -->
-<span data-theme-target="badge">...</span>      <!-- --ts-badge-bg, --ts-badge-text -->
-<div data-theme-target="modal">...</div>        <!-- --ts-modal-bg -->
+<div data-theme-target="card">...</div>   <!-- force-include as a card -->
+<div data-theme-target="none">...</div>   <!-- exclude from all heuristics -->
+<div data-theme-ignore>...</div>          <!-- same, alternate syntax -->
 ```
-
-No `data-theme-target="card"` anywhere on the page? The "Cards" section
-simply won't appear in the Custom panel. The library re-scans the DOM every
-time the panel is opened, so elements added dynamically (e.g. cards loaded
-after a fetch) are picked up on the next open.
 
 ## Manual init
 
@@ -106,3 +112,6 @@ storage blocked), the library degrades gracefully to session-only state.
 Uses CSS custom properties, `requestAnimationFrame`, and `<input type="color">` —
 supported in all modern evergreen browsers.
 
+## License
+
+MIT
