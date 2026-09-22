@@ -1,0 +1,183 @@
+/*!
+ * theme-selector.css
+ * Structural styles for the Theme Selector library.
+ * Visual theme COLORS are driven by CSS custom properties on :root
+ * (see theme-selector.js — PRESETS / applyTokens). This file only
+ * lays out the toggle button + panel and consumes those tokens, so
+ * it never needs to change when a new theme is picked.
+ */
+
+:root {
+  /* ---- Base tokens (always present, overwritten at runtime) ---- */
+  --ts-bg: #ffffff;
+  --ts-surface: #f4f4f5;
+  --ts-text: #18181b;
+  --ts-text-muted: #71717a;
+  --ts-primary: #6366f1;
+  --ts-primary-contrast: #ffffff;
+  --ts-accent: #818cf8;
+  --ts-border: #e4e4e7;
+  --ts-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --ts-radius: 12px;
+  --ts-transition: 180ms ease;
+}
+
+/* Optional convenience classes host apps can opt into so the page
+   actually reflects the active theme without any extra CSS. */
+.ts-themed-bg      { background: var(--ts-bg); color: var(--ts-text); }
+.ts-themed-surface { background: var(--ts-surface); color: var(--ts-text); }
+.ts-themed-text     { color: var(--ts-text); }
+.ts-themed-muted    { color: var(--ts-text-muted); }
+.ts-themed-primary  { background: var(--ts-primary); color: var(--ts-primary-contrast); }
+.ts-themed-border   { border-color: var(--ts-border); }
+
+/* ------------------------------------------------------------------ */
+/* Cog toggle button                                                   */
+/* ------------------------------------------------------------------ */
+.ts-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2147483000;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--ts-border);
+  background: var(--ts-surface);
+  color: var(--ts-text);
+  cursor: pointer;
+  box-shadow: var(--ts-shadow);
+  transition: transform var(--ts-transition), background var(--ts-transition);
+}
+.ts-toggle:hover { transform: rotate(25deg); }
+.ts-toggle:active { transform: rotate(45deg) scale(0.95); }
+.ts-toggle svg { width: 20px; height: 20px; }
+.ts-toggle[aria-expanded="true"] { background: var(--ts-primary); color: var(--ts-primary-contrast); border-color: var(--ts-primary); }
+
+/* ------------------------------------------------------------------ */
+/* Panel                                                                */
+/* ------------------------------------------------------------------ */
+.ts-panel {
+  position: fixed;
+  top: 64px;
+  right: 16px;
+  z-index: 2147483000;
+  width: min(320px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  background: var(--ts-bg);
+  color: var(--ts-text);
+  border: 1px solid var(--ts-border);
+  border-radius: var(--ts-radius);
+  box-shadow: var(--ts-shadow);
+  padding: 16px;
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  transform-origin: top right;
+  transform: scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--ts-transition), opacity var(--ts-transition);
+}
+.ts-panel[data-open="true"] {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ts-panel h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ts-text-muted);
+}
+
+.ts-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ts-swatch {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  border: 2px solid var(--ts-border);
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  transition: transform var(--ts-transition), border-color var(--ts-transition);
+}
+.ts-swatch:hover { transform: scale(1.08); }
+.ts-swatch[aria-pressed="true"] { border-color: var(--ts-text); box-shadow: 0 0 0 2px var(--ts-bg), 0 0 0 4px var(--ts-primary); }
+.ts-swatch-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  text-align: center;
+  color: var(--ts-text-muted);
+}
+.ts-swatch-cell { display: flex; flex-direction: column; align-items: center; }
+
+.ts-rainbow-swatch {
+  background: conic-gradient(from 0deg, red, orange, yellow, lime, cyan, blue, magenta, red);
+}
+.ts-custom-swatch {
+  background: var(--ts-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.ts-divider { border: none; border-top: 1px solid var(--ts-border); margin: 12px 0; }
+
+.ts-field-group { margin-bottom: 14px; }
+.ts-field-group legend {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ts-text-muted);
+  padding: 0;
+  margin-bottom: 6px;
+}
+.ts-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.ts-field label { color: var(--ts-text); font-size: 13px; }
+.ts-field input[type="color"] {
+  width: 32px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--ts-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.ts-reset-btn {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--ts-border);
+  background: var(--ts-surface);
+  color: var(--ts-text);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--ts-transition);
+}
+.ts-reset-btn:hover { background: var(--ts-border); }
+
+.ts-panel::-webkit-scrollbar { width: 8px; }
+.ts-panel::-webkit-scrollbar-thumb { background: var(--ts-border); border-radius: 999px; }
